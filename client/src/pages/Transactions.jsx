@@ -9,6 +9,8 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import axios from 'axios';
+import AINaturalInput from '../components/Expenses/AINaturalInput';
+
 
 const Transactions = () => {
   const dispatch = useDispatch();
@@ -130,6 +132,8 @@ const Transactions = () => {
           </button>
         </div>
       </div>
+
+      <AINaturalInput />
 
       <AnimatePresence>
         {selectedIds.length > 0 && (

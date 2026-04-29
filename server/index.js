@@ -55,7 +55,7 @@ app.use('/api/budgets', require('./routes/budgets'));
 app.use('/api/analytics', require('./routes/analytics'));
 app.use('/api/ai', require('./routes/ai'));
 app.use('/api/admin', require('./routes/admin'));
-app.use('/api/recurring', require('./routes/recurring'));
+
 app.use('/api/notifications', require('./routes/notifications'));
 
 // Health check
@@ -95,9 +95,6 @@ app.use((err, req, res, next) => {
 
 // Start server
 connectDB().then(() => {
-  // Initialize cron jobs for recurring transactions
-  const setupRecurringJobs = require('./cron/recurringJob');
-  setupRecurringJobs();
 
   app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);

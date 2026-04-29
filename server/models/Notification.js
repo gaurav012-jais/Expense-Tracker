@@ -17,7 +17,7 @@ const notificationSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['anomaly', 'recurring', 'system', 'achievement', 'budget'],
+    enum: ['anomaly', 'system', 'achievement', 'budget'],
     default: 'system'
   },
   read: {

@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, ReceiptText, PieChart, MessageSquareCode, LogOut, Wallet, Shield, X, Trash2, Repeat, ShieldCheck } from 'lucide-react';
+import { LayoutDashboard, ReceiptText, PieChart, MessageSquareCode, LogOut, Wallet, Shield, X, Trash2, Repeat, ShieldCheck, Sparkles } from 'lucide-react';
+
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../slices/authSlice';
 
@@ -12,11 +13,13 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     { name: 'Dashboard', icon: LayoutDashboard, path: '/' },
     { name: 'Transactions', icon: ReceiptText, path: '/transactions' },
     { name: 'Budgets', icon: PieChart, path: '/budgets' },
-    { name: 'Recurring', icon: Repeat, path: '/recurring' },
     { name: 'AI Assistant', icon: MessageSquareCode, path: '/ai-chat' },
+
+    { name: 'AI Insights', icon: Sparkles, path: '/insights' },
     { name: 'Trash', icon: Trash2, path: '/trash' },
     { name: 'Security', icon: Shield, path: '/settings/security' },
   ];
+
 
   if (user?.role === 'admin') {
     navItems.push({ name: 'Admin Panel', icon: ShieldCheck, path: '/admin' });

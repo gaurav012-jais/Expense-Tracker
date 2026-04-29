@@ -80,21 +80,6 @@ async function runTests() {
     const notifRes = await fetchReq('GET', '/notifications', null, userAuthHeaders);
     console.log(`✅ Notifications fetched: ${notifRes.data.notifications.length} notifications`);
 
-    // 6. Testing Recurring Transactions
-    console.log('\n[6] Testing Recurring Transactions...');
-    const addRecurringRes = await fetchReq('POST', '/recurring', {
-      merchant: 'Netflix',
-      amount: 15,
-      category: 'Entertainment',
-      frequency: 'monthly',
-      type: 'expense',
-      nextDate: new Date(),
-      startDate: new Date()
-    }, userAuthHeaders);
-    console.log('✅ Recurring Transaction added');
-
-    const getRecurringRes = await fetchReq('GET', '/recurring', null, userAuthHeaders);
-    console.log(`✅ Fetched Recurring (${getRecurringRes.data.recurring.length} found)`);
 
     // 7. Testing Admin Routes
     console.log('\n[7] Testing Admin Routes...');

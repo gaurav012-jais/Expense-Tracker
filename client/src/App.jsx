@@ -8,15 +8,17 @@ const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Transactions = lazy(() => import('./pages/Transactions'));
 const Budgets = lazy(() => import('./pages/Budgets'));
 const AIChat = lazy(() => import('./pages/AIChat'));
+const Insights = lazy(() => import('./pages/Insights'));
 const Login = lazy(() => import('./pages/Login'));
+
 const Register = lazy(() => import('./pages/Register'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const TwoFAVerify = lazy(() => import('./pages/TwoFAVerify'));
 const TwoFASetup = lazy(() => import('./pages/TwoFASetup'));
 const Trash = lazy(() => import('./pages/Trash'));
-const RecurringTransactions = lazy(() => import('./pages/RecurringTransactions'));
 const Admin = lazy(() => import('./pages/Admin'));
+
 const AdminLogin = lazy(() => import('./pages/AdminLogin'));
 const AdminRegister = lazy(() => import('./pages/AdminRegister'));
 
@@ -58,7 +60,9 @@ function App() {
               <Route path="/transactions" element={<ProtectedRoute><Transactions /></ProtectedRoute>} />
               <Route path="/budgets" element={<ProtectedRoute><Budgets /></ProtectedRoute>} />
               <Route path="/ai-chat" element={<ProtectedRoute><AIChat /></ProtectedRoute>} />
-              <Route path="/recurring" element={<ProtectedRoute><RecurringTransactions /></ProtectedRoute>} />
+              <Route path="/insights" element={<ProtectedRoute><Insights /></ProtectedRoute>} />
+
+
               <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
               <Route path="/settings/security" element={<ProtectedRoute><TwoFASetup /></ProtectedRoute>} />
               <Route path="/trash" element={<ProtectedRoute><Trash /></ProtectedRoute>} />

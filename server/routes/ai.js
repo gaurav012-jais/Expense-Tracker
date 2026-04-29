@@ -3,7 +3,13 @@ const router = express.Router();
 const Transaction = require('../models/Transaction');
 const Budget = require('../models/Budget');
 const { authMiddleware } = require('../middleware/authMiddleware');
+const geminiService = require('../services/geminiService');
+const cacheService = require('../services/cacheService');
 
+/**
+ * @route   GET /api/ai/insights
+ * @desc    Get AI insights (Legacy/Simple)
+ */
 router.get('/insights', authMiddleware, async (req, res) => {
   try {
     const startOfMonth = new Date();
@@ -102,6 +108,10 @@ router.get('/insights', authMiddleware, async (req, res) => {
   }
 });
 
+/**
+ * @route   POST /api/ai/chat
+ * @desc    Chat with AI Assistant
+ */
 router.post('/chat', authMiddleware, async (req, res) => {
   try {
     const { message } = req.body;
@@ -129,7 +139,6 @@ router.post('/chat', authMiddleware, async (req, res) => {
     let reply = '';
 
     try {
-      const geminiService = require('../services/geminiService');
       const userContext = await geminiService.getFinancialContext(req.user, transactions, budgets);
       const aiReply = await geminiService.chatWithAI(userContext, message);
       
@@ -193,6 +202,106 @@ router.post('/chat', authMiddleware, async (req, res) => {
     res.json({ success: true, reply });
   } catch (err) {
     res.status(500).json({ success: false, error: 'Server error' });
+  }
+});
+
+/**
+ * @route   POST /api/ai/parse
+ * @desc    Natural Language Input parsing
+ */
+router.post('/parse', authMiddleware, async (req, res) => {
+  try {
+    const { text } = req.body;
+    if (!text) {
+      return res.status(400).json({ success: false, error: 'Text is required' });
+    }
+
+    const result = await geminiService.parseNaturalLanguageExpense(req.user._id, text);
+    res.json({ 
+      success: true, 
+      data: result.data, 
+      timestamp: result.timestamp 
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+/**
+ * @route   POST /api/ai/suggest-category
+ * @desc    Suggest category based on merchant
+ */
+router.post('/suggest-category', authMiddleware, async (req, res) => {
+  try {
+    const { merchant } = req.body;
+    if (!merchant) {
+      return res.status(400).json({ success: false, error: 'Merchant is required' });
+    }
+
+    // Fetch user's past transactions for patterns
+    const pastExpenses = await Transaction.find({
+      userId: req.user._id,
+      type: 'expense',
+      deletedAt: null
+    }).select('merchant category').limit(20);
+
+    const pastPatterns = pastExpenses.map(e => ({ merchant: e.merchant, category: e.category }));
+
+    const result = await geminiService.suggestCategory(req.user._id, merchant, pastPatterns);
+    res.json({ 
+      success: true, 
+      category: result.data, 
+      timestamp: result.timestamp 
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+/**
+ * @route   POST /api/ai/insights
+ * @desc    Get Portfolio Spending Insights
+ */
+router.post('/insights', authMiddleware, async (req, res) => {
+  try {
+    // Fetch last 30 days of expenses
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const expenses = await Transaction.find({
+      userId: req.user._id,
+      type: 'expense',
+      date: { $gte: thirtyDaysAgo },
+      deletedAt: null
+    });
+
+    const result = await geminiService.getPortfolioInsights(req.user._id, expenses);
+    res.json({ 
+      success: true, 
+      insights: result.data.insights,
+      anomalies: result.data.anomalies,
+      tips: result.data.tips,
+      timestamp: result.timestamp 
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+/**
+ * @route   GET /api/ai/cache-status
+ * @desc    Get API usage stats and cache status
+ */
+router.get('/cache-status', authMiddleware, async (req, res) => {
+  try {
+    const status = await cacheService.checkApiLimit(req.user._id);
+    res.json({
+      success: true,
+      limit: parseInt(process.env.DAILY_API_LIMIT) || 20,
+      usage: status.usage,
+      remaining: status.remaining,
+      limitReached: status.limitReached
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
